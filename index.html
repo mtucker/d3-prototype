@@ -32,9 +32,39 @@
 
     path{
 
-      stroke: steelblue;
       stroke-width: 2;
       fill: none;
+
+    }
+
+    .actual{
+
+      stroke: #2C99F2; 
+
+    }
+
+    .prior_year {
+
+      stroke: #CCCCCC;
+      stroke-width: 1;
+
+    }
+
+    .axis path,
+    .axis line {
+
+        fill: none;
+        stroke: #CCCCCC;
+        stroke-width: 1;
+        shape-rendering: crispEdges;
+
+    }
+
+    .axis text {
+
+        font-family: sans-serif;
+        font-size: 11px;
+        color: #CCCCCC;
 
     }
 
@@ -65,75 +95,99 @@
   <script>
 
     var h = 300;
-    var w = 1000;
+    var w = 600;
+    var xpadding = 100;
+    var ypadding = 25;
 
-    var data = [[2,20,8,1], [3,6,9,11], [1,5,10,13]]
-
-    var list = d3.select("body").append("div")
-      .attr("id", "list");
-
-    //var svg = d3.select("#chart").append("svg");
-    list
-      .selectAll("div")
-      .data(data)
-      .enter()
-      .append("ul")
-      .selectAll("li")
-      .data(function(d){return d;})
-      .enter()
-      .append("li")
-      .text(String);
-
-    var x = d3.scale.linear()
-                    .domain([0, 4])
-                    .range([0, w]);
-
-    var y = d3.scale.linear()
-                    .domain([0, d3.max(data, function(d){ return d3.max(d);})])
-                    .range([h, 0]);
+    var data;
 
     var chart = d3.select("body").append("svg")
        .attr("id", "chart")
        .attr("height", h)
        .attr("width", w);
 
-    // chart.selectAll("svg")
-    //   .data(data)
-    //   .enter()
-    //   .append("g")     
-    //   .style("fill", function() {
-    //         return "hsl(" + Math.random() * 360 + ",100%,50%)" })
-    //   .selectAll("circle")
-    //   .data(function(d){return d;})
-    //   .enter()
-    //   .append("circle")
-    //   .attr("cy", y)
-    //   .attr("cx", x)
-    //   .attr("r", function(d){return d;});
+    var quarter = function(date){
 
-  var line = d3.svg.line()
-    // assign the X function to plot our line as we wish
-    .x(function(d, i) {
-    // verbose logging to show what's actually being done
-    //console.log('Plotting X value for data point: ' + d + ' using index: ' + i + ' to be at: ' + x(i) + ' using our xScale.');
-    // return the X coordinate where we want to plot this datapoint
-    return x(i);
-    })
-    .y(function(d) {
-    // verbose logging to show what's actually being done
-    //console.log('Plotting Y value for data point: ' + d + ' to be at: ' + y(d) + " using our yScale.");
-    // return the Y coordinate where we want to plot this datapoint
-    return y(d);
-    })
-    .interpolate("basis");
+      q = Math.floor(( date.getMonth()) / 3 ); 
 
-    chart.selectAll("svg")
-      .data(data)
-      .enter()
-      .append("svg:path")
-      .attr("d", line)
-      .style("stroke", function() {
-             return "hsl(" + Math.random() * 360 + ",100%,50%)" });
+      if(q > 0){
+
+        return "Q" + q;
+
+      } else {
+
+        return "Q" + q;
+
+      }
+
+    }
+
+    d3.json("http://wazi.dev/services/revenue.json", function(json) {
+
+      data = json;
+
+      var format = d3.time.format("%Y-%m-%d %H:%M:%S");
+
+
+      var minDate = format.parse("2012-01-01 00:00:00");
+      var maxDate = format.parse("2013-02-01 00:00:00");
+
+      console.log("Min Date: " + minDate);
+      console.log("Max Date: " + maxDate);
+
+      var x = d3.time.scale()
+                .domain([minDate, maxDate]).range([xpadding, w]);
+
+      var y = d3.scale.linear()
+                .domain([0, 15000000])
+                .range([h - ypadding, ypadding]);
+
+      var xAxis = d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom")
+                    .ticks(d3.time.months, 3)
+                    .tickFormat(quarter);
+
+      var yAxis = d3.svg.axis()
+                    .scale(y)
+                    .orient("left")
+                    .ticks(5)
+                    .tickFormat(d3.format(".1s"));
+
+        var line = d3.svg.line()
+        // assign the X function to plot our line as we wish
+        .x(function(d, i) {
+        // verbose logging to show what's actually being done
+        console.log('Plotting X value for data point: ' + d + ' using index: ' + i + ' to be at: ' + x(format.parse(d.dttm)) + ' using our xScale.');
+        // return the X coordinate where we want to plot this datapoint
+        return x(format.parse(d.dttm));
+        })
+        .y(function(d) {
+        // verbose logging to show what's actually being done
+        console.log('Plotting Y value for data point: ' + d + ' to be at: ' + y(d.value) + " using our yScale.");
+        // return the Y coordinate where we want to plot this datapoint
+        return y(d.value);
+        })
+        .interpolate("basis");
+
+      chart.selectAll("svg")
+        .data(data)
+        .enter()
+        .append("svg:path")
+        .attr("class", function(d){return d.revenue_type; } )
+        .attr("d", function(d){ return line(d.intervals);} );
+
+      chart.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0," + (h - ypadding) + ")")
+        .call(xAxis);
+
+      chart.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(" + xpadding + ",0)")
+        .call(yAxis);
+
+    });
 
 
 
