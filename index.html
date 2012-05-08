@@ -32,7 +32,7 @@
 
     path{
 
-      stroke-width: 2;
+      
       fill: none;
 
     }
@@ -40,6 +40,14 @@
     .actual{
 
       stroke: #2C99F2; 
+      stroke-width: 3;
+
+    }
+
+    .target {
+
+      stroke: red;
+      stroke-width: 1;
 
     }
 
@@ -47,6 +55,27 @@
 
       stroke: #CCCCCC;
       stroke-width: 1;
+
+    }
+
+    g .actual {
+
+      fill: #2C99F2;
+      stroke: white;
+
+    }
+
+    g .target {
+
+      fill: red;
+      stroke: white;
+
+    }
+
+    g .prior_year {
+
+      fill: #CCCCCC;
+      stroke: white;
 
     }
 
@@ -78,6 +107,9 @@
 
   <!-- Add your site or application content here -->
 
+  <div id="chart1"></div>
+
+  <div id="chart2" style="padding-left: 50px"></div>
 
   <!-- JavaScript at the bottom for fast page loading: http://developer.yahoo.com/performance/rules.html#js_bottom -->
 
@@ -101,24 +133,40 @@
 
     var data;
 
-    var chart = d3.select("body").append("svg")
-       .attr("id", "chart")
+    var lineChart = d3.select("#chart1").append("svg")
+       .attr("id", "line-chart")
        .attr("height", h)
        .attr("width", w);
 
-    var quarter = function(date){
+    var quarter = function(date, i){
 
-      q = Math.floor(( date.getMonth()) / 3 ); 
-
-      if(q > 0){
-
-        return "Q" + q;
-
-      } else {
+      if(i > 0){
+      
+        var date2 = new Date();
+        date2.setMonth(date.getMonth() - 1);
+        q = Math.ceil(( date2.getMonth()) / 3 ); 
 
         return "Q" + q;
 
       }
+
+    }
+
+    var getMinDate = function(pdata){
+
+      return d3.min(pdata, function(d){return d3.min(d.intervals, function(d){ return d.dttm; }); });
+
+    }
+
+    var getMaxDate = function(pdata){
+
+      return d3.max(pdata, function(d){return d3.max(d.intervals, function(d){ return d.dttm; }); });
+
+    }
+
+    var getMaxValue = function(pdata){
+
+      return d3.max(pdata, function(d){return d3.max(d.intervals, function(d){ return d.value; }); });
 
     }
 
@@ -128,18 +176,20 @@
 
       var format = d3.time.format("%Y-%m-%d %H:%M:%S");
 
-
-      var minDate = format.parse("2012-01-01 00:00:00");
-      var maxDate = format.parse("2013-02-01 00:00:00");
+      var minDate = format.parse(getMinDate(data));
+      var maxDate = format.parse(getMaxDate(data));
+      maxDate.setMonth(maxDate.getMonth() + 1);
+      var maxValue = Math.ceil(getMaxValue(data) / 5000000) * 5000000;
 
       console.log("Min Date: " + minDate);
       console.log("Max Date: " + maxDate);
+      console.log("Max Value: " + maxValue);
 
       var x = d3.time.scale()
                 .domain([minDate, maxDate]).range([xpadding, w]);
 
       var y = d3.scale.linear()
-                .domain([0, 15000000])
+                .domain([0, maxValue])
                 .range([h - ypadding, ypadding]);
 
       var xAxis = d3.svg.axis()
@@ -152,44 +202,147 @@
                     .scale(y)
                     .orient("left")
                     .ticks(5)
-                    .tickFormat(d3.format(".1s"));
+                    .tickFormat(d3.format("s"));
 
-        var line = d3.svg.line()
-        // assign the X function to plot our line as we wish
+      var line = d3.svg.line()
+          // assign the X function to plot our line as we wish
         .x(function(d, i) {
-        // verbose logging to show what's actually being done
-        console.log('Plotting X value for data point: ' + d + ' using index: ' + i + ' to be at: ' + x(format.parse(d.dttm)) + ' using our xScale.');
-        // return the X coordinate where we want to plot this datapoint
-        return x(format.parse(d.dttm));
+          // verbose logging to show what's actually being done
+          console.log('Plotting X value for data point: ' + d + ' using index: ' + i + ' to be at: ' + x(format.parse(d.dttm)) + ' using our xScale.');
+          // return the X coordinate where we want to plot this datapoint
+          return x(format.parse(d.dttm));
         })
         .y(function(d) {
-        // verbose logging to show what's actually being done
-        console.log('Plotting Y value for data point: ' + d + ' to be at: ' + y(d.value) + " using our yScale.");
-        // return the Y coordinate where we want to plot this datapoint
-        return y(d.value);
+          // verbose logging to show what's actually being done
+          console.log('Plotting Y value for data point: ' + d + ' to be at: ' + y(d.value) + " using our yScale.");
+          // return the Y coordinate where we want to plot this datapoint
+          return y(d.value);
         })
         .interpolate("basis");
 
-      chart.selectAll("svg")
+      lineChart.selectAll("svg")
         .data(data)
         .enter()
         .append("svg:path")
         .attr("class", function(d){return d.revenue_type; } )
         .attr("d", function(d){ return line(d.intervals);} );
 
-      chart.append("g")
+      lineChart.append("g")
         .attr("class", "axis")
         .attr("transform", "translate(0," + (h - ypadding) + ")")
         .call(xAxis);
 
-      chart.append("g")
+      lineChart.append("g")
         .attr("class", "axis")
         .attr("transform", "translate(" + xpadding + ",0)")
         .call(yAxis);
 
     });
 
+    var dataset = [ 
+          { 
+            "revenue_type": "actual",
+            "revenue": [
+                { "revenue_category": "myCW", "value": 100}, 
+                { "revenue_category": "CWO", "value": 120}, 
+                { "revenue_category": "WF", "value": 90}, 
+                { "revenue_category": "OFFLINE", "value": 70}
+              ]
+          },
+          { 
+            "revenue_type": "target",
+            "revenue": [
+                { "revenue_category": "myCW", "value": 80}, 
+                { "revenue_category": "CWO", "value": 90}, 
+                { "revenue_category": "WF", "value": 100 }, 
+                { "revenue_category": "OFFLINE", "value": 90}
+              ] 
+          },
+          { 
+            "revenue_type": "prior_year",
+              "revenue": [
+                { "revenue_category": "myCW", "value": 75}, 
+                { "revenue_category": "CWO", "value": 83}, 
+                { "revenue_category": "WF", "value": 92 }, 
+                { "revenue_category": "OFFLINE", "value": 120}
+              ]
+          }
+      ];
 
+
+    // First, we define sizes and colours...
+    var outerW = 600; // outer width
+    var outerH = 300; // outer height
+    var padding = { t: 0, r: 0, b: 0, l: 0 };
+    var w = outerW - padding.l - padding.r; // inner width
+    var h = outerH - padding.t - padding.b; // inner height
+
+    // Third, we define our scales...
+    // Groups scale, x axis
+    var x0 = d3.scale.ordinal()
+        .domain(d3.range(4))
+        .rangeBands([0, w], 0.2);
+
+    // Series scale, x axis
+    // It might help to think of the series scale as a child of the groups scale
+    var x1 = d3.scale.ordinal()
+        .domain(d3.range(3))
+        .rangeBands([0, x0.rangeBand()]);
+
+  // Values scale, y axis
+  var y = d3.scale.linear()
+      .domain([0, 130]) // Because Math.random returns numbers between 0 and 1
+      .range([0,h]);
+
+    var barGraph = d3.select("#chart2").append("svg")
+       .attr("id", "barGraph")
+       .attr("height", outerH)
+       .attr("width", outerW)
+       .append("svg:g")
+        .attr("transform", "translate(30)");
+      
+
+    var g = barGraph.selectAll("g.series")  
+      .data(dataset)
+      .enter()
+      .append("svg:g")   
+      .attr("class", function(d){return d.revenue_type; })
+      .attr("transform", function(d, i) { return "translate(" + x1(i) + ",0)"; });
+
+    var rect = g.selectAll("rect")
+      .data(function(d){
+        return d.revenue;
+      })
+      .enter()
+      .append("svg:rect")
+      .attr("x", 0)
+      .attr("y", function(d){ return h - y(d.value); })
+      .attr("width", x1.rangeBand())
+      .attr("height", function(d) { return y(d.value); })
+      .attr("transform", function(d, i) { return "translate(" + x0(i) + ",0)"; })
+
+    var yAxisScale = d3.scale.linear()
+      .domain([0, 130]) // Because Math.random returns numbers between 0 and 1
+      .range([h,0]);
+
+    var yAxis = d3.svg.axis()
+        .scale(yAxisScale)
+        .orient("left")
+        .ticks(5)
+        .tickFormat(d3.format("s"));
+
+    barGraph.append("g")
+        .attr("class", "axis")
+        .call(yAxis);
+
+    var xAxis = d3.svg.axis()
+                    .scale(x1)
+                    .orient("bottom");
+
+    lineChart.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0," + (h * 2) - ypadding + ")")
+        .call(xAxis);
 
   </script>
 
