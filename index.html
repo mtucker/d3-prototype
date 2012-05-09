@@ -30,6 +30,11 @@
 
   <style>
 
+    svg {
+
+
+    }
+
     path{
 
       
@@ -173,16 +178,22 @@
 
     }
 
-    d3.json("http://wazi.dev/services/revenue.json", function(json) {
+    d3.json("http://wazi.dev/d3/data.json", function(json) {
 
       data = json;
 
+      var dataByIntervalType = d3.nest()
+        .key(function(d) { return d.interval_type; })
+        .map(data.revenues);
+
       var format = d3.time.format("%Y-%m-%d %H:%M:%S");
 
-      var minDate = format.parse(getMinDate(data));
-      var maxDate = format.parse(getMaxDate(data));
+      var yearData = dataByIntervalType.YEAR[0];
+
+      var minDate = format.parse(getMinDate(yearData.revenue_type_intervals));
+      var maxDate = format.parse(getMaxDate(yearData.revenue_type_intervals));
       maxDate.setMonth(maxDate.getMonth() + 1);
-      var maxValue = Math.ceil(getMaxValue(data) / 5000000) * 5000000;
+      var maxValue = Math.ceil(getMaxValue(yearData.revenue_type_intervals) / 5000000) * 5000000;
 
       console.log("Min Date: " + minDate);
       console.log("Max Date: " + maxDate);
@@ -224,7 +235,7 @@
         .interpolate("basis");
 
       lineChart.selectAll("svg")
-        .data(data)
+        .data(yearData.revenue_type_intervals)
         .enter()
         .append("svg:path")
         .attr("class", function(d){return d.revenue_type; } )
@@ -242,144 +253,96 @@
 
     });
 
-    var dataset = [ 
-          { 
-            "revenue_type": "actual",
-            "revenue": [
-                { "revenue_category": "myCW", "value": 100}, 
-                { "revenue_category": "CWO", "value": 120}, 
-                { "revenue_category": "WF", "value": 90}, 
-                { "revenue_category": "OFFLINE", "value": 70}
-              ]
-          },
-          { 
-            "revenue_type": "target",
-            "revenue": [
-                { "revenue_category": "myCW", "value": 80}, 
-                { "revenue_category": "CWO", "value": 90}, 
-                { "revenue_category": "WF", "value": 100 }, 
-                { "revenue_category": "OFFLINE", "value": 90}
-              ] 
-          },
-          { 
-            "revenue_type": "prior_year",
-              "revenue": [
-                { "revenue_category": "myCW", "value": 75}, 
-                { "revenue_category": "CWO", "value": 83}, 
-                { "revenue_category": "WF", "value": 92 }, 
-                { "revenue_category": "OFFLINE", "value": 120}
-              ]
-          }
-      ];
+    d3.json("http://wazi.dev/d3/data.json", function(json) {
 
-      var dataset2 = [ 
-          { 
-            "revenue_category": "actual",
-            "revenue": [
-                { "revenue_type": "myCW", "value": 100}, 
-                { "revenue_type": "CWO", "value": 120}, 
-                { "revenue_type": "WF", "value": 90}, 
-                { "revenue_type": "OFFLINE", "value": 70}
-              ]
-          },
-          { 
-            "revenue_category": "target",
-            "revenue": [
-                { "revenue_type": "myCW", "value": 80}, 
-                { "revenue_type": "CWO", "value": 90}, 
-                { "revenue_type": "WF", "value": 100 }, 
-                { "revenue_type": "OFFLINE", "value": 90}
-              ] 
-          },
-          { 
-            "revenue_category": "prior_year",
-              "revenue": [
-                { "revenue_type": "myCW", "value": 75}, 
-                { "revenue_type": "CWO", "value": 83}, 
-                { "revenue_type": "WF", "value": 92 }, 
-                { "revenue_type": "OFFLINE", "value": 120}
-              ]
-          }
-      ];
+      data = json;
 
+      var dataByIntervalType = d3.nest()
+        .key(function(d) { return d.interval_type; })
+        .map(data.revenues);
 
-    // First, we define sizes and colours...
-    var outerW = 600; // outer width
-    var outerH = 300; // outer height
-    var padding = { t: 0, r: 0, b: 30, l: 0 };
-    var w = outerW - padding.l - padding.r; // inner width
-    var h = outerH - padding.t - padding.b; // inner height
+      var quarterData = dataByIntervalType.QUARTER
 
-    // Third, we define our scales...
-    // Groups scale, x axis
-    var x0 = d3.scale.ordinal()
-        .domain(d3.range(4))
-        .rangeBands([0, w], 0.2);
+      // First, we define sizes and colours...
+      var outerW = 600; // outer width
+      var outerH = 300; // outer height
+      var padding = { t: 0, r: 0, b: 30, l: 0 };
+      var w = outerW - padding.l - padding.r; // inner width
+      var h = outerH - padding.t - padding.b; // inner 
 
-    // Series scale, x axis
-    // It might help to think of the series scale as a child of the groups scale
-    var x1 = d3.scale.ordinal()
-        .domain(d3.range(3))
-        .rangeBands([0, x0.rangeBand()]);
+      var labels = ["myCW", "CWO", "WF", "OFFLINE"];
 
-  // Values scale, y axis
-  var y = d3.scale.linear()
-      .domain([0, 130])
-      .range([0,h]);
+      // Third, we define our scales...
+      // Groups scale, x axis
+      var x0 = d3.scale.ordinal()
+          .domain(d3.range(4))
+          .rangeBands([0, w], 0.2);
 
-    var barGraph = d3.select("#chart2").append("svg")
-       .attr("id", "barGraph")
-       .attr("height", outerH)
-       .attr("width", outerW)
-       .append("svg:g")
-        .attr("transform", "translate(30,-10)");
-      
+      // Series scale, x axis
+      // It might help to think of the series scale as a child of the groups scale
+      var x1 = d3.scale.ordinal()
+          .domain(d3.range(3))
+          .rangeBands([0, x0.rangeBand()]);
 
-    var g = barGraph.selectAll("g.series")  
-      .data(dataset)
-      .enter()
-      .append("svg:g")   
-      .attr("class", function(d){return d.revenue_type; })
-      .attr("transform", function(d, i) { return "translate(" + x1(i) + ",0)"; });
+    // Values scale, y axis
+    var y0 = d3.scale.linear()
+        .domain([0, 3000000])
+        .range([0,h]);
 
-    var rect = g.selectAll("rect")
-      .data(function(d){
-        return d.revenue;
-      })
-      .enter()
-      .append("svg:rect")
-      .attr("x", 0)
-      .attr("y", function(d){ return h - y(d.value); })
-      .attr("width", x1.rangeBand())
-      .attr("height", function(d) { return y(d.value); })
-      .attr("transform", function(d, i) { return "translate(" + x0(i) + ",0)"; })
+      var barGraph = d3.select("#chart2").append("svg")
+         .attr("id", "barGraph")
+         .attr("height", outerH)
+         .attr("width", outerW)
+         .append("svg:g")
+          .attr("transform", "translate(30,-10)");
+        
 
-    g.append("svg:text")
-      .attr("x", 50)
-      .attr("y", 150)
-      .text("Label");
+      var g = barGraph.selectAll("g.series")  
+        .data(quarterData)
+        .enter()
+        .append("svg:g")   
+        .attr("class", function(d){return d.revenue_category; })
+        .attr("transform", function(d, i) { return "translate(" + x0(i) + ",0)"; });
 
-    var yAxisScale = d3.scale.linear()
-      .domain([0, 130]) // Because Math.random returns numbers between 0 and 1
-      .range([h,0]);
+      var rect = g.selectAll("rect")
+        .data(function(d){
+          return d.revenue_summaries;
+        })
+        .enter()
+        .append("svg:rect")
+        .attr("x", 0)
+        .attr("y", function(d){ return h - y0(d.value); })
+        .attr("width", x1.rangeBand())
+        .attr("height", function(d) { return y0(d.value); })
+        .attr("class", function(d){ return d.revenue_type; })
+        .attr("transform", function(d, i) { return "translate(" + x1(i) + ",0)"; });
 
-    var yAxis = d3.svg.axis()
-        .scale(yAxisScale)
-        .orient("left")
-        .ticks(5)
-        .tickFormat(d3.format("s"));
+      var yAxisScale = d3.scale.linear()
+        .domain([0, 3000000])
+        .range([h,0]);
 
-    barGraph.append("g")
-        .attr("class", "axis")
-        .call(yAxis);
+      var yAxis2 = d3.svg.axis()
+          .scale(yAxisScale)
+          .orient("left")
+          .ticks(5)
+          .tickFormat(d3.format("s"));
 
-    barGraph.append("svg:line")
-        .attr("class", "axis")
-        .attr("x1", 0)
-        .attr("y1", h)
-        .attr("x2", w)
-        .attr("y2", h)
-        .attr("width", w);
+      barGraph.append("g")
+          .attr("class", "axis")
+          .call(yAxis2);
+
+      var xAxis2 = d3.svg.axis()
+          .scale(x0)
+          .ticks(4)
+          .tickValues(labels)
+          .orient("bottom");
+
+      barGraph.append("g")
+          .attr("class", "axis")
+          .call(xAxis2)
+          .attr("transform", function(d, i) { return "translate(0," + h + ")"; });
+
+        });
 
   </script>
 

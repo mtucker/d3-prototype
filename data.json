@@ -1,84 +1,217 @@
-[
+{
+    "revenues": [
     {
-        "intervals": [
+        "interval_type": "YEAR",
+        "interval_name": "2012",
+        "interval_start_dttm": "2012-01-01 00:00:00",
+        "interval_end_dttm": "2013-01-01 00:00:00",
+        "revenue_category": "WATER",
+        "revenue_summaries": [
             {
-                "dttm": "2012-01-01 00:00:00", 
-                "value": 0
-            }, 
+                "revenue_type": "actual",
+                "value": 3400983.62
+            },
             {
-                "dttm": "2012-02-01 00:00:00", 
-                "value": "699700.910000001"
-            }, 
+                "revenue_type": "target",
+                "value": 13877500
+            },
             {
-                "dttm": "2012-03-01 00:00:00", 
-                "value": "1578192.95"
-            }, 
-            {
-                "dttm": "2012-04-01 00:00:00", 
-                "value": "2651477.35"
-            }, 
-            {
-                "dttm": "2012-05-01 00:00:00", 
-                "value": "3400983.62"
+                "revenue_type": "prior_year",
+                "value": 13282569.67
             }
-        ], 
-        "revenue_type": "actual"
-    }, 
+        ],
+        "revenue_type_intervals": [
+            {
+                "intervals": [
+                    {
+                        "dttm": "2012-01-01 00:00:00", 
+                        "value": 0
+                    }, 
+                    {
+                        "dttm": "2012-02-01 00:00:00", 
+                        "value": 699700.91
+                    }, 
+                    {
+                        "dttm": "2012-03-01 00:00:00", 
+                        "value": 1578192.95
+                    }, 
+                    {
+                        "dttm": "2012-04-01 00:00:00", 
+                        "value": 2651477.35
+                    }, 
+                    {
+                        "dttm": "2012-05-01 00:00:00", 
+                        "value": 3400983.62
+                    }
+                ], 
+                "revenue_type": "actual"
+            }, 
+            {
+                "intervals": [
+                    {
+                        "dttm": "2012-01-01 00:00:00", 
+                        "value": 0
+                    }, 
+                    {
+                        "dttm": "2012-02-01 00:00:00", 
+                        "value": 1054978.97
+                    }, 
+                    {
+                        "dttm": "2012-03-01 00:00:00", 
+                        "value": 2183451.3
+                    }, 
+                    {
+                        "dttm": "2012-04-01 00:00:00", 
+                        "value": 3198938.87
+                    }, 
+                    {
+                        "dttm": "2012-05-01 00:00:00", 
+                        "value": 3864452.58
+                    }, 
+                    {
+                        "dttm": "2012-06-01 00:00:00", 
+                        "value": 4436517.17
+                    }, 
+                    {
+                        "dttm": "2012-07-01 00:00:00", 
+                        "value": 5046940.09
+                    }, 
+                    {
+                        "dttm": "2012-08-01 00:00:00", 
+                        "value": 6597040.78
+                    }, 
+                    {
+                        "dttm": "2012-09-01 00:00:00", 
+                        "value": 7851117.79
+                    }, 
+                    {
+                        "dttm": "2012-10-01 00:00:00", 
+                        "value": 8377344.35
+                    }, 
+                    {
+                        "dttm": "2012-11-01 00:00:00", 
+                        "value": 8749742.26
+                    }, 
+                    {
+                        "dttm": "2012-12-01 00:00:00", 
+                        "value": 9593661.24
+                    }, 
+                    {
+                        "dttm": "2013-01-01 00:00:00", 
+                        "value": 13282569.67
+                    }
+                ], 
+                "revenue_type": "prior_year"
+            }, 
+            {
+                "intervals": [
+                    {
+                        "dttm": "2012-01-01 00:00:00", 
+                        "value": 0
+                    }, 
+                    {
+                        "dttm": "2012-04-01 00:00:00", 
+                        "value": 2105000
+                    }, 
+                    {
+                        "dttm": "2012-07-01 00:00:00", 
+                        "value": 6275000
+                    }, 
+                    {
+                        "dttm": "2012-10-01 00:00:00", 
+                        "value": 12734000
+                    }, 
+                    {
+                        "dttm": "2013-01-01 00:00:00", 
+                        "value": 13877500
+                    }
+                ], 
+                "revenue_type": "target"
+            }
+        ]
+    },
     {
-        "intervals": [
+        "interval_type": "QUARTER",
+        "interval_name": "Q1.2012",
+        "interval_start_dttm": "2012-01-01 00:00:00",
+        "interval_end_dttm": "2012-04-01 00:00:00",
+        "revenue_category": "MYCW",
+        "revenue_summaries": [
             {
-                "dttm": "2012-01-01 00:00:00", 
-                "value": 0
-            }, 
+                "revenue_type": "actual",
+                "value": 2651477.35
+            },
             {
-                "dttm": "2012-02-01 00:00:00", 
-                "value": "1054978.97"
-            }, 
+                "revenue_type": "target",
+                "value": 1055000
+            },
             {
-                "dttm": "2012-03-01 00:00:00", 
-                "value": "2183451.3"
-            }, 
-            {
-                "dttm": "2012-04-01 00:00:00", 
-                "value": "3198938.87"
-            }, 
-            {
-                "dttm": "2012-05-01 00:00:00", 
-                "value": "3864452.58000001"
-            }, 
-            {
-                "dttm": "2012-06-01 00:00:00", 
-                "value": "4436517.17"
-            }, 
-            {
-                "dttm": "2012-07-01 00:00:00", 
-                "value": "5046940.09000001"
-            }, 
-            {
-                "dttm": "2012-08-01 00:00:00", 
-                "value": "6597040.78"
-            }, 
-            {
-                "dttm": "2012-09-01 00:00:00", 
-                "value": "7851117.79"
-            }, 
-            {
-                "dttm": "2012-10-01 00:00:00", 
-                "value": "8377344.35"
-            }, 
-            {
-                "dttm": "2012-11-01 00:00:00", 
-                "value": "8749742.26000001"
-            }, 
-            {
-                "dttm": "2012-12-01 00:00:00", 
-                "value": "9593661.24000001"
-            }, 
-            {
-                "dttm": "2013-01-01 00:00:00", 
-                "value": "13282569.67"
+                "revenue_type": "prior_year",
+                "value": 1764012.59
             }
-        ], 
-        "revenue_type": "prior_year"
-    }
-]
+        ]
+    },
+    {
+        "interval_type": "QUARTER",
+        "interval_name": "Q1.2012",
+        "interval_start_dttm": "2012-01-01 00:00:00",
+        "interval_end_dttm": "2012-04-01 00:00:00",
+        "revenue_category": "CWO",
+        "revenue_summaries": [
+            {
+                "revenue_type": "actual",
+                "value": 459387.91
+            },
+            {
+                "revenue_type": "target",
+                "value": 500000
+            },
+            {
+                "revenue_type": "prior_year",
+                "value": 455693.1
+            }
+        ]
+    },
+    {
+        "interval_type": "QUARTER",
+        "interval_name": "Q1.2012",
+        "interval_start_dttm": "2012-01-01 00:00:00",
+        "interval_end_dttm": "2012-04-01 00:00:00",
+        "revenue_category": "WF",
+        "revenue_summaries": [
+            {
+                "revenue_type": "actual",
+                "value": 73630
+            },
+            {
+                "revenue_type": "target",
+                "value": 252250
+            },
+            {
+                "revenue_type": "prior_year",
+                "value": null
+            }
+        ]
+    },
+    {
+        "interval_type": "QUARTER",
+        "interval_name": "Q1.2012",
+        "interval_start_dttm": "2012-01-01 00:00:00",
+        "interval_end_dttm": "2012-04-01 00:00:00",
+        "revenue_category": "OFFLINE",
+        "revenue_summaries": [
+            {
+                "revenue_type": "actual",
+                "value": 737878.52
+            },
+            {
+                "revenue_type": "target",
+                "value": 550000
+            },
+            {
+                "revenue_type": "prior_year",
+                "value": 979233.18
+            }
+        ]
+    }]
+}
